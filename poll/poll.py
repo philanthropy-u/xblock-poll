@@ -437,6 +437,10 @@ class PollBlock(PollBase, CSVExportMixin):
                  scope=Scope.user_state_summary,
                  help=_("Total tally of answers from students."))
     choice = String(scope=Scope.user_state, help=_("The student's answer"))
+    possible_choices = String(
+        scope=Scope.user_state,
+        help=_("The possible choices")
+    )
     event_namespace = 'xblock.poll'
 
     def clean_tally(self):
@@ -673,12 +677,18 @@ class PollBlock(PollBase, CSVExportMixin):
         self.tally[choice] += 1
         self.submissions_count += 1
 
+        # save choices along with answer
+        self.possible_choices = self.answers
+
         result['success'] = True
         result['can_vote'] = self.can_vote()
         result['submissions_count'] = self.submissions_count
         result['max_submissions'] = self.max_submissions
 
-        self.send_vote_event({'choice': self.choice})
+        self.send_vote_event({
+            'choice': self.choice,
+            'possible_choices': self.possible_choices
+        })
 
         return result
 
