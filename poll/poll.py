@@ -678,7 +678,7 @@ class PollBlock(PollBase, CSVExportMixin):
         self.submissions_count += 1
 
         # save choices along with answer
-        self.possible_choices = self.answers
+        self.possible_choices = json.dumps(self.answers)
 
         result['success'] = True
         result['can_vote'] = self.can_vote()
